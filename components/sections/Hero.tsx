@@ -1,7 +1,7 @@
 import React from 'react';
-import Banner from './Banner';
-import Testimony from './Testimony';
-import News from './News';
+import Banner from '@/components/ui/Banner';
+import Testimony from '@/components/sections/Testimony';
+import News from '@/components/sections/News';
 import Offer from './Offer';
 
 const Hero = () => {
