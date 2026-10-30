@@ -1,6 +1,7 @@
-'use client'
+'use client';
+
 import React, { useState } from 'react';
-// import { supabase } from '../../supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 interface Details {
   full_name: string;
@@ -18,15 +19,18 @@ const initialFormData: Details = {
   time: '',
 };
 
-type Status = 'idle' | 'loading' | 'success' | 'error';
+type Status = 'idle' | 'loading' | 'success' | 'error' | 'taken';
 
 const AppointCard = () => {
   const [formData, setFormData] = useState<Details>(initialFormData);
   const [status, setStatus] = useState<Status>('idle');
 
+  const today = new Date().toLocaleDateString('en-CA');
+  
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
+    if (status !== 'idle' && status !== 'loading') setStatus('idle');
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -38,7 +42,7 @@ const AppointCard = () => {
     
     if (error) {
       console.error(error);
-      setStatus('error');
+      setStatus(error.code === '23505' ? 'taken' : 'error');
     } else {
       setStatus('success');
       setFormData(initialFormData);
@@ -51,6 +55,9 @@ const AppointCard = () => {
 
       {status === 'success' && (
         <p className="text-center text-sm text-[#01D28E]">Appointment booked successfully! We'll be in touch soon.</p>
+      )}
+      {status === 'taken' && (
+        <p className="text-center text-sm text-red-600">That time slot is already taken. Please choose another time.</p>
       )}
       {status === 'error' && (
         <p className="text-center text-sm text-red-600">Something went wrong. Please try again.</p>
@@ -102,6 +109,7 @@ const AppointCard = () => {
               className="h-[2.5rem] rounded-lg p-2 border border-gray-300"
               type="date"
               name="date"
+              min={today}
               value={formData.date}
               onChange={handleChange}
               required
@@ -113,6 +121,8 @@ const AppointCard = () => {
               className="h-[2.5rem] rounded-lg p-2 border border-gray-300"
               type="time"
               name="time"
+              min="08:00"
+              max="17:00"
               value={formData.time}
               onChange={handleChange}
               required

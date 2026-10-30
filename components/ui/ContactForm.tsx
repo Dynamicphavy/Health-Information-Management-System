@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-// import { supabase } from '../../supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 interface ContactDetails {
   name: string;
